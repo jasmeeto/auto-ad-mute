@@ -1,9 +1,11 @@
 {
   "manifest_version": 2,
 
-  "name": "Auto Youtube Ad Mute",
-  "description": "This ad mutes youtube ad audio",
+  "name": "Auto Ad Mute",
+  "description": "This mutes youtube ad audio.",
   "version": "1.0",
+
+  "icons" : { "48" : "icon_mute.png" },
 
   "content_scripts": [
     {
