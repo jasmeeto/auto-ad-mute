@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "Auto Youtube Ad Mute",
+  "description": "This ad mutes youtube ad audio",
+  "version": "1.0",
+
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*"],
+      "css": ["content-styles.css"],
+      "js": ["libs/jquery-3.1.0.min.js", "content-script.js"],
+      "all_frames" : true,
+      "run_at": "document_end"
+    }
+  ], 
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html",
+    "default_title": "Auto Mute Options"
+  },
+  "permissions": [
+    "tabs", "*://www.youtube.com/*"
+  ]
+}
