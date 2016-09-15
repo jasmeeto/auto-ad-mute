@@ -1,4 +1,3 @@
-
 $.fn.exists = function () {
     return this.length !== 0;
 }
@@ -6,38 +5,60 @@ $.fn.exists = function () {
 var videoMuted = false;
 var addonEnabled = true;
 
-chrome.runtime.onMessage.addListener(
-    function(req, sender, sendResponse) {
-        if (req.action == 'enable') {
-            console.log('enable');
-            addonEnabled = true; 
+function runScript() {
+    var html5VideoSelector = '.html5-main-video';
+
+    $(html5VideoSelector).on('play', function() {
+        if (!addonEnabled) return;
+
+        if ($('.videoAdUi').exists()) {
+            if (! $(html5VideoSelector).prop('muted')) {
+                $(".ytp-mute-button").click();
+            }
+            chrome.storage.sync.set({'videoMuted': true}, function(){
+                videoMuted = true;
+            });
+            chrome.runtime.sendMessage({action: 'mute'});
+        }
+    });
+
+    $(html5VideoSelector).on('ended', function(){
+        if (!addonEnabled) return;
+
+        if (videoMuted) {
+            if ($(html5VideoSelector).prop('muted')) {
+                $(".ytp-mute-button").click();
+            }
+            chrome.storage.sync.set({'videoMuted': false}, function(){
+                videoMuted = false;
+            });
+            chrome.runtime.sendMessage({action: 'unmute'});
+        }
+    });
+
+}
+
+function syncSettings() {
+    chrome.storage.sync.get(function(items){
+        if (chrome.runtime.lastError) {
             return;
         }
-        if (req.action == 'disable') {
-            console.log('disable');
-            addonEnabled = false; 
+        if (items.addonEnabled !== undefined) {
+            addonEnabled = items.addonEnabled;
+        }
+    });
+}
+
+chrome.runtime.onMessage.addListener(
+    function(req, sender, sendResponse) {
+        if (req.action == 'sync') {
+            syncSettings();
+            return;
+        }
+        if (req.action == 'restartScript') {
+            syncSettings();
+            runScript();
             return;
         }
     }
 );
-
-$('.html5-main-video').on('play', function() {
-    if (addonEnabled) {
-        if ($('.videoAdUi').exists()) {
-            $(".ytp-mute-button").click();
-            videoMuted = true;
-            chrome.runtime.sendMessage({action: 'mute_icon'});
-        }
-    }
-});
-
-$('.html5-main-video').on('ended', function(){
-    if (addonEnabled) {
-        if (videoMuted) {
-            $(".ytp-mute-button[title='Unmute']").click();
-            videoMuted = false;
-            chrome.runtime.sendMessage({action: 'unmute_icon'});
-        }
-    }
-});
-

@@ -8,24 +8,50 @@ $(document).ready(function(){
         });
     }
 
-
     var enabled = true;
-    $('.button-toggle').text('Disable');
-    $('.button-toggle').on('click', function(){
+    var videoMuted = false;
+
+    function updateUi() {
         if (enabled) {
-            enabled = false;
+            if (videoMuted) {
+                chrome.browserAction.setIcon({
+                    path: 'icon_mute.png',
+                });
+            } else {
+                chrome.browserAction.setIcon({
+                    path: 'icon.png',
+                });
+            }
+            $('.button-toggle').text('Disable');
+        } else {
             chrome.browserAction.setIcon({
                 path: 'icon_disabled.png',
-            });
-            sendToAllTabs({action: 'disable'});
-            $('.button-toggle').text('Enable');
-        } else {
-            enabled = true;
-            chrome.browserAction.setIcon({
-                path: 'icon.png',
             }); 
-            sendToAllTabs({action: 'enable'});
-            $('.button-toggle').text('Disable');
+            $('.button-toggle').text('Enable');
         }
+    }
+
+    chrome.storage.sync.get(function(items){
+        if (chrome.runtime.lastError) {
+            return;
+        }
+        if (items.addonEnabled !== undefined) {
+            enabled = items.addonEnabled;
+        }
+
+        if (items.videoMuted !== undefined) {
+            videoMuted = items.videoMuted;
+        }
+        updateUi();
+    });
+
+    $('.button-toggle').on('click', function(){
+        chrome.storage.sync.set({'addonEnabled': !enabled}, function(){
+            if (chrome.runtime.lastError) return;
+
+            enabled = !enabled;
+            updateUi();
+            sendToAllTabs({action: 'sync'});
+        });
     });
 });

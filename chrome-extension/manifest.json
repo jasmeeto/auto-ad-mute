@@ -8,7 +8,9 @@
   "content_scripts": [
     {
       "matches": ["*://www.youtube.com/*"],
-      "js": ["libs/jquery-3.1.0.min.js", "contentScript.js"],
+      "js": ["libs/jquery-3.1.0.min.js",
+             "contentScript.js"
+            ],
       "all_frames" : true,
       "run_at": "document_end"
     }
@@ -22,6 +24,9 @@
     "scripts": ["backgroundScript.js"]
   },
   "permissions": [
-    "tabs", "*://www.youtube.com/*"
+    "tabs",
+    "*://www.youtube.com/*",
+    "webNavigation",
+    "storage"
   ]
 }
