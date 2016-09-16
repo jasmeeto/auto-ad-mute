@@ -7,13 +7,27 @@ var addonEnabled = true;
 
 function runScript() {
     var html5VideoSelector = '.html5-main-video';
+    var muteButtonSelector = '.ytp-mute-button';
+    var videoAdSelector = '.videoAdUi';
+    var videoSkipButtonSelector = '.videoAdUiSkipButton';
+
+    // unmute at start of script
+    if ($(html5VideoSelector).prop('muted')) {
+        $(muteButtonSelector).click();
+    }
+
+    $(html5VideoSelector).on('timeupdate', function() {
+        if (!addonEnabled) return;
+        // skip ad if possible on every time update
+        $(videoSkipButtonSelector).click()
+    });
 
     $(html5VideoSelector).on('play', function() {
         if (!addonEnabled) return;
 
-        if ($('.videoAdUi').exists()) {
+        if ($(videoAdSelector).exists()) {
             if (! $(html5VideoSelector).prop('muted')) {
-                $(".ytp-mute-button").click();
+                $(muteButtonSelector).click();
             }
             chrome.storage.sync.set({'videoMuted': true}, function(){
                 videoMuted = true;
@@ -27,7 +41,7 @@ function runScript() {
 
         if (videoMuted) {
             if ($(html5VideoSelector).prop('muted')) {
-                $(".ytp-mute-button").click();
+                $(muteButtonSelector).click();
             }
             chrome.storage.sync.set({'videoMuted': false}, function(){
                 videoMuted = false;
@@ -57,7 +71,11 @@ chrome.runtime.onMessage.addListener(
         }
         if (req.action == 'restartScript') {
             syncSettings();
-            runScript();
+            chrome.storage.sync.set({'videoMuted': false }, function(){
+                chrome.runtime.sendMessage({action: 'unmute'});
+                videoMuted = false;
+                runScript();
+            });
             return;
         }
     }
