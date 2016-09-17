@@ -46,10 +46,11 @@ $(document).ready(function(){
     });
 
     $('.button-toggle').on('click', function(){
-        chrome.storage.sync.set({'addonEnabled': !enabled}, function(){
+        chrome.storage.sync.set({'addonEnabled': !enabled, videoMuted: false}, function(){
             if (chrome.runtime.lastError) return;
 
             enabled = !enabled;
+            videoMuted = false;
             updateUi();
             sendToAllTabs({action: 'sync'});
         });

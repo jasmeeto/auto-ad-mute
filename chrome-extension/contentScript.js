@@ -22,10 +22,11 @@ function runScript() {
         $(videoSkipButtonSelector).click()
     });
 
-    $(html5VideoSelector).on('play', function() {
+    function onPlay() {
         if (!addonEnabled) return;
 
-        if ($(videoAdSelector).exists()) {
+        var exists = $(videoAdSelector).exists();
+        if (exists) {
             if (! $(html5VideoSelector).prop('muted')) {
                 $(muteButtonSelector).click();
             }
@@ -33,13 +34,7 @@ function runScript() {
                 videoMuted = true;
             });
             chrome.runtime.sendMessage({action: 'mute'});
-        }
-    });
-
-    $(html5VideoSelector).on('ended', function(){
-        if (!addonEnabled) return;
-
-        if (videoMuted) {
+        } else if (videoMuted) {
             if ($(html5VideoSelector).prop('muted')) {
                 $(muteButtonSelector).click();
             }
@@ -48,8 +43,10 @@ function runScript() {
             });
             chrome.runtime.sendMessage({action: 'unmute'});
         }
-    });
+    }
 
+    $(html5VideoSelector).on('play', onPlay);
+    $(html5VideoSelector).on('playing', onPlay);
 }
 
 function syncSettings() {

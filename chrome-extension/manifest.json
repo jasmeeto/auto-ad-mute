@@ -3,7 +3,7 @@
 
   "name": "Auto Ad Mute",
   "description": "This mutes youtube ad audio.",
-  "version": "1.1",
+  "version": "1.2",
 
   "icons" : { "48" : "icon_mute.png" },
 
