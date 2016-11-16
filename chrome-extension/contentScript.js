@@ -10,6 +10,7 @@ function runScript() {
     var muteButtonSelector = '.ytp-mute-button';
     var videoAdSelector = '.videoAdUi';
     var videoSkipButtonSelector = '.videoAdUiSkipButton';
+    var adContainerSelector = '.ad-container';
 
     // unmute at start of script
     if ($(html5VideoSelector).prop('muted')) {
@@ -19,7 +20,9 @@ function runScript() {
     $(html5VideoSelector).on('timeupdate', function() {
         if (!addonEnabled) return;
         // skip ad if possible on every time update
-        $(videoSkipButtonSelector).click()
+        $(videoSkipButtonSelector).click();
+        // also move ad banner off screen if it exists
+        $(adContainerSelector).css("position", "absolute").css("left", -9999);
     });
 
     function onPlay() {
