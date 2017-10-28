@@ -10,6 +10,7 @@ $(document).ready(function(){
 
     var enabled = true;
     var videoMuted = false;
+    var skipAds = false;
 
     function updateUi() {
         if (enabled) {
@@ -22,13 +23,16 @@ $(document).ready(function(){
                     path: 'icon.png',
                 });
             }
-            $('.button-toggle').text('Disable');
+            $('#disable-button').text('Disable');
         } else {
             chrome.browserAction.setIcon({
                 path: 'icon_disabled.png',
             }); 
-            $('.button-toggle').text('Enable');
+            $('#disable-button').text('Enable');
         }
+
+        skipAdText = skipAds ? 'Disable Ad Skip' : 'Enable Ad Skip';
+        $('#skip-ad').text(skipAdText);
     }
 
     chrome.storage.sync.get(function(items){
@@ -42,15 +46,28 @@ $(document).ready(function(){
         if (items.videoMuted !== undefined) {
             videoMuted = items.videoMuted;
         }
+
+        if(items.skipAds !== undefined) {
+            skipAds = items.skipAds;
+        }
         updateUi();
     });
 
-    $('.button-toggle').on('click', function(){
-        chrome.storage.sync.set({'addonEnabled': !enabled, videoMuted: false}, function(){
+    $('#disable-button').on('click', function(){
+        chrome.storage.sync.set({'addonEnabled': !enabled}, function(){
             if (chrome.runtime.lastError) return;
 
             enabled = !enabled;
-            videoMuted = false;
+            updateUi();
+            sendToAllTabs({action: 'sync'});
+        });
+    });
+
+    $('#skip-ad').on('click', function(){
+        chrome.storage.sync.set({'skipAds': !skipAds}, function(){
+            if (chrome.runtime.lastError) return;
+
+            skipAds = !skipAds;
             updateUi();
             sendToAllTabs({action: 'sync'});
         });
