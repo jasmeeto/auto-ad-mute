@@ -17,3 +17,15 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+// To handle youtube video page
+chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
+    if(details.frameId === 0) {
+        // Fires only when details.url === currentTab.url
+        chrome.tabs.get(details.tabId, function(tab) {
+            if(tab.url === details.url) {
+                chrome.tabs.sendMessage(tab.id, {action: 'restartScript'});
+            }
+        });
+    }
+});
