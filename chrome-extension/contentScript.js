@@ -3,7 +3,7 @@
 $.fn.exists = function () {
     return this.length !== 0;
 }
-
+console.log("as")
 var videoMuted = false;
 var addonEnabled = true;
 var skipAds = false;
@@ -13,6 +13,7 @@ var html5VideoSelector = '.html5-main-video';
 function runScript() {
     var muteButtonSelector = '.ytp-mute-button';
     var videoAdSelector = '.videoAdUi';
+    var videoAdSelectorM = '.ytp-ad-player-overlay';
     var videoSkipButtonSelector = '.videoAdUiSkipButton';
     var adContainerSelector = '.ad-container';
     var namespace = ".autoAdMute";
@@ -21,7 +22,7 @@ function runScript() {
         if (!addonEnabled) return;
         // check if need for muting on every time update
         if(this.currentTime > 0.0
-            && $(videoAdSelector).exists()
+            && ($(videoAdSelector).exists() || (location.href.indexOf("music.youtube.com") >= 0 && $(videoAdSelectorM).exists()))
             && !videoMuted) {
             onPlay();
         }
@@ -37,7 +38,7 @@ function runScript() {
     var onPlay = function() {
         if (!addonEnabled) return;
 
-        var exists = $(videoAdSelector).exists();
+        var exists = $(videoAdSelector).exists() || (location.href.indexOf("music.youtube.com") >= 0 && $(videoAdSelectorM).exists());
         if (exists) {
             chrome.storage.sync.set({'videoMuted': true}, function(){
                 videoMuted = true;

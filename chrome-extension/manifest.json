@@ -9,7 +9,7 @@
 
   "content_scripts": [
     {
-      "matches": ["*://www.youtube.com/*"],
+      "matches": ["*://*.youtube.com/*"],
       "js": ["libs/jquery-3.1.0.min.js",
              "libs/arrive.min.js",
              "contentScript.js"
@@ -28,7 +28,7 @@
   },
   "permissions": [
     "tabs",
-    "*://www.youtube.com/*",
+    "*://*.youtube.com/*",
     "webNavigation",
     "storage"
   ]
