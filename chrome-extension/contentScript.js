@@ -3,7 +3,6 @@
 $.fn.exists = function () {
     return this.length !== 0;
 }
-console.log("as")
 var videoMuted = false;
 var addonEnabled = true;
 var skipAds = false;
